@@ -1,0 +1,43 @@
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">x</h4>
+            <p class="card-title-desc">Date : Nom - Prénom - Sexe - Classe</p>    
+
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Catégorie / Sexe</th>
+                            <th>Femme</th>
+                            <th>Homme</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Primaire</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>Collège</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Total</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div> </div>
+</div>

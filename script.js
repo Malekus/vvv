@@ -4,7 +4,6 @@ $(document).ready(function(){
     console.log("doc ready")
     var myDropzone = new Dropzone("#upload-widget", {url: "/file-upload"});
     myDropzone.on("addedfile", function(file) {
-
         $.ajax({
             type: "get",
             url: "/makeCharts",
@@ -16,7 +15,23 @@ $(document).ready(function(){
                 $('#workplaceArray .row').append(data.htmlArray)
             }
         });
-
        
     });
+
+    $('#btnReload').on('click', function(){
+        console.log("clicqué")
+        $.ajax({
+            type: "get",
+            url: "/makeCharts",
+            success: function (data) {
+                $('#dropZonePlace').remove()
+                $('#workplace .row').empty()
+                $('#workplace .row').append(data.chart1)
+                $('#workplace .row').append(data.chart2 )
+                $('#workplace .row').append(data.chart3)
+                $('#workplaceArray .row').empty()
+                $('#workplaceArray .row').append(data.htmlArray)
+            }
+        });
+    })
 })

@@ -33,8 +33,6 @@ function initLowDB(){
     */
 }
 
-// initLowDB()
-
 function getAllDate(data) {
     return data.split(',').filter(d => d != '' && d != " " && d != "\r")
 }
@@ -44,6 +42,8 @@ function createChartFile(name, data){
         if (err) return console.log(err);
         console.log('File ' + name + " done !");
     });
+
+    db.set(name, data).write()
 }
 
 function getSingleActivities(activites) {
@@ -127,9 +127,6 @@ function getSeriesEleves(data) {
 
 
 function getSeriesActities(activites){
-
-    //let singleActivity = getSingleActivities(activites)
-
     let activitetab = []
     Object.values(activites).forEach(element => {
         activitetab = activitetab.concat(element.matin)
@@ -180,11 +177,17 @@ function getActivitiesTabs(activites, dates, eleves){
                 r[el].dates.push(d)
                 r[el].eleves.push(x)
             }
-            
         })
-        //r[el] = {eleves : eleves.filter(e => e.jours[dates[0]].matin == el || e.jours[dates[0]].aprem == el)}
     })
 
+    return r
+}
+
+function flaten(f){
+    let r = []
+    f.forEach(e => {
+        e.map(e => r.push(e))
+    })
     return r
 }
 
@@ -192,77 +195,31 @@ function makeTabActivities(tabActivities) {
     
     db.set('htmlRecap', []).write()
     db.set('tableauActivite', tabActivities).write()
-
-    let arrayTexte
+    let elf = null
+    let arrayTexte = ""
     Object.keys(tabActivities).forEach(function(el){
-        // dataReplace["activitie"] = el
-        // 
         arrayTexte = ""
-        
+            fs.readFile('template_array.txt', 'utf8' , (err, data) => {
+                if (err) console.error(err)
+                elf = flaten(tabActivities[el].eleves)
+                arrayTexte = data
+                    .replace(/{%ACTIVITE%}/g, el)
+                    .replace(/{%DATES%}/g,  tabActivities[el].dates.join(" - "))
+                    .replace(/{%PF%}/g,  elf.filter(e => e.sexe == "F" && e.classe.match(/c/i)).length)
+                    .replace(/{%PM%}/g,  elf.filter(e => e.sexe == "M" && e.classe.match(/c/i)).length)
+                    .replace(/{%PT%}/g,  elf.filter(e => e.classe.match(/c/i)).length)
+                    .replace(/{%CF%}/g,  elf.filter(e => e.sexe == "F" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                    .replace(/{%CM%}/g,  elf.filter(e => e.sexe == "M" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                    .replace(/{%CT%}/g,  elf.filter(e => e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                    .replace(/{%FT%}/g,  elf.filter(e => e.sexe == "F" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
+                    .replace(/{%MT%}/g,  elf.filter(e => e.sexe == "M" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
+                    .replace(/{%TT%}/g,  elf.length)
 
-        fs.readFile('template_array.txt', 'utf8' , (err, data) => {
-            if (err) console.error(err)
-            arrayTexte = data
-                .replace(/{%ACTIVITE%}/g, el)
-                .replace(/{%DATES%}/g,  tabActivities[el].dates.join(" - "))
-                .replace(/{%PF%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/c/i)).length)
-                .replace(/{%PM%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/c/i)).length)
-                .replace(/{%PT%}/g,  tabActivities[el].eleves.flat().filter(e => e.classe.match(/c/i)).length)
-                .replace(/{%CF%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
-                .replace(/{%CM%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
-                .replace(/{%CT%}/g,  tabActivities[el].eleves.flat().filter(e => e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
-                .replace(/{%FT%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
-                .replace(/{%MT%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
-                .replace(/{%TT%}/g,  tabActivities[el].eleves.flat().length)
+                db.get('htmlRecap').push(arrayTexte).write()
 
-            db.get('htmlRecap').push(arrayTexte).write()
-
-            createArrayFiles(el + "Array", arrayTexte)
-        })
-
-        /*
-        dataReplace = {}
-        dataReplace["dates"] = tabActivities[el].dates
-        dataReplace["PF"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/c/i)).length
-        dataReplace["PM"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/c/i)).length
-        dataReplace["PT"] = tabActivities[el].eleves.flat().filter(e => e.classe.match(/c/i)).length
-        dataReplace["CF"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length
-        dataReplace["CM"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length
-        dataReplace["CT"] = tabActivities[el].eleves.flat().filter(e => e.classe.match(/6|5|4|3|2nd|1ère/i)).length
-        dataReplace["FT"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length
-        dataReplace["MT"] = dataReplace["PM"] + dataReplace["CM"]
-        dataReplace["TT"] = tabActivities[el].eleves.flat().length
-        fs.readFile('template_array.txt', 'utf8' , (err, data) => {
-            if (err) console.error(err)
-            arrayTexte = data
-                .replace(/{%ACTIVITE%}/g, el)
-                .replace(/{%DATES%}/g, dataReplace["dates"])
-                .replace(/{%PF%}/g, dataReplace["PF"])
-                .replace(/{%PM%}/g, dataReplace["PM"])
-                .replace(/{%PT%}/g, dataReplace["PT"])
-                .replace(/{%CF%}/g, dataReplace["CF"])
-                .replace(/{%CM%}/g, dataReplace["CM"])
-                .replace(/{%CT%}/g, dataReplace["CT"])
-                .replace(/{%FT%}/g, dataReplace["FT"])
-                .replace(/{%MT%}/g, dataReplace["MT"])
-                .replace(/{%TT%}/g, dataReplace["TT"])
-
-            db.get('htmlRecap').push(arrayTexte).write()
-
-            createArrayFiles(el + "Array", arrayTexte)
-        })
-
-*/
-
-
-
+                createArrayFiles(el + "Array", arrayTexte)
+            })
     })
-
-    /*
-    fs.readFile('template_array.txt', 'utf8' , (err, data) => {
-        console.log(data)
-    })
-    */
 }
 
 const app = express()
@@ -303,9 +260,9 @@ app.post('/file-upload', upload.single('file'), (req, res) => {
 
 app.get('/makeCharts', (req, res) => {
 
-    let chart1 = fs.readFileSync(path.join(__dirname + '/charts/activitiesCharts'), 'utf8')
-    let chart2 = fs.readFileSync(path.join(__dirname + '/charts/elevePrimiareChart'), 'utf8')
-    let chart3 = fs.readFileSync(path.join(__dirname + '/charts/eleveCollegeChart'), 'utf8')
+    let chart1 = db.get('activitiesCharts').value() // fs.readFileSync(path.join(__dirname + '/charts/activitiesCharts'), 'utf8')
+    let chart2 = db.get('elevePrimiareChart').value() // fs.readFileSync(path.join(__dirname + '/charts/elevePrimiareChart'), 'utf8')
+    let chart3 = db.get('eleveCollegeChart').value() // fs.readFileSync(path.join(__dirname + '/charts/eleveCollegeChart'), 'utf8')
 
     let arrayHTML = db.get('htmlRecap').value()
 
@@ -326,6 +283,5 @@ const port = 12345;
 // app.on('listening', initLowDB());
 
 app.listen(port, () => {
-    // initLowDB()
     console.log('Serveur en marche')
 })
