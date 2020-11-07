@@ -17,6 +17,24 @@ const fileExists = (file) => {
     })
 }
 
+function initLowDB(){
+
+    let tmp = ""
+
+    fs.readFile('./templates/template_chart.txt', 'utf8' , (err, data) => {
+        tmp = JSON.stringify(data)
+    })
+    db.defaults('template.chart', tmp).write()
+    
+    /*
+    fs.readFile('./templates/template_tab.txt', 'utf8' , (err, data) => {
+        db.defaults('template.tab', data).write()
+    })
+    */
+}
+
+// initLowDB()
+
 function getAllDate(data) {
     return data.split(',').filter(d => d != '' && d != " " && d != "\r")
 }
@@ -149,10 +167,7 @@ function getActivitiesTabs(activites, dates, eleves){
         activitetab = activitetab.concat(element.aprem)
     })
 
-
-
     let singleActivity = [... new Set(activitetab)].sort()
-
 
     db.set('activite', singleActivity).write()
 
@@ -170,28 +185,14 @@ function getActivitiesTabs(activites, dates, eleves){
         //r[el] = {eleves : eleves.filter(e => e.jours[dates[0]].matin == el || e.jours[dates[0]].aprem == el)}
     })
 
-    //console.log(r)
-
-    /*
-    fs.writeFile("./test.txt", JSON.stringify(r), function (err) {
-        if (err) return console.log(err);
-    });
-    */
-
     return r
 }
 
 function makeTabActivities(tabActivities) {
     
-
-    // console.log(tabActivities)
     db.set('htmlRecap', []).write()
     db.set('tableauActivite', tabActivities).write()
 
-    let lx = db.get('tableauActivite.Course.eleves').values()
-    //console.log(lx)
-
-    let dataReplace = {}
     let arrayTexte
     Object.keys(tabActivities).forEach(function(el){
         // dataReplace["activitie"] = el
@@ -321,6 +322,10 @@ app.use('/assets', express.static('assets'))
 
 
 const port = 12345;
+
+// app.on('listening', initLowDB());
+
 app.listen(port, () => {
+    // initLowDB()
     console.log('Serveur en marche')
 })

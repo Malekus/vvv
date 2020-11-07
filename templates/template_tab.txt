@@ -1,0 +1,42 @@
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">{%ACTIVITE%}</h4>
+            <p class="card-title-desc">Date : {%DATES%}</p>    
+
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Catégorie / Sexe</th>
+                            <th>Femme</th>
+                            <th>Homme</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Primaire</td>
+                            <td>{%PF%}</td>
+                            <td>{%PM%}</td>
+                            <td>{%PT%}</td>
+                        </tr>
+                        <tr>
+                            <td>Collège</td>
+                            <td>{%CF%}</td>
+                            <td>{%CM%}</td>
+                            <td>{%CT%}</td>
+                        </tr>
+                        <tr>
+                            <td>Total</td>
+                            <td>{%FT%}</td>
+                            <td>{%MT%}</td>
+                            <td>{%TT%}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
