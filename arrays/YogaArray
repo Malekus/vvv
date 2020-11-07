@@ -2,13 +2,13 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Yoga</h4>
-            <p class="card-title-desc">Date : 21/10/2020,22/10/2020,23/10/2020</p>    
+            <p class="card-title-desc">Date : 21/10/2020 - 22/10/2020 - 23/10/2020</p>    
 
             <div class="table-responsive">
                 <table class="table table-bordered mb-0">
                     <thead>
                         <tr>
-                            <th>Yoga</th>
+                            <th>Catégorie / Sexe</th>
                             <th>Femme</th>
                             <th>Homme</th>
                             <th>Total</th>

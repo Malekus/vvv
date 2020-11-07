@@ -10,9 +10,10 @@ $(document).ready(function(){
             url: "/makeCharts",
             success: function (data) {
                 $('#dropZonePlace').remove()
-                $('#workplace').append('<div class="row"><div class="col-12 my-5">' + data.chart1 + '</div></div>')
-                $('#workplace').append(data.chart2)
-                $('#workplace').append(data.chart3)
+                $('#workplace .row').append(data.chart1)
+                $('#workplace .row').append(data.chart2 )
+                $('#workplace .row').append(data.chart3)
+                $('#workplaceArray .row').append(data.htmlArray)
             }
         });
 

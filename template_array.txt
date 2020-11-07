@@ -8,7 +8,7 @@
                 <table class="table table-bordered mb-0">
                     <thead>
                         <tr>
-                            <th>{%ACTIVITE%}</th>
+                            <th>Catégorie / Sexe</th>
                             <th>Femme</th>
                             <th>Homme</th>
                             <th>Total</th>

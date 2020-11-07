@@ -1,5 +1,6 @@
+<div class="col-12 my-5">
 <div id="idChart" style="max-width: 100%; height: 400px"></div>
-
+</div>
 <script type="text/javascript">
 graphe1 = new Map()
 Highcharts.chart('idChart', {

@@ -1,14 +1,14 @@
 <div class="col-lg-6">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Yoga</h4>
-            <p class="card-title-desc">Date : 21/10/2020,22/10/2020,23/10/2020</p>    
+            <h4 class="card-title">Course</h4>
+            <p class="card-title-desc">Date : 19/10/2020 - 20/10/2020</p>    
 
             <div class="table-responsive">
                 <table class="table table-bordered mb-0">
                     <thead>
                         <tr>
-                            <th>Yoga</th>
+                            <th>Catégorie / Sexe</th>
                             <th>Femme</th>
                             <th>Homme</th>
                             <th>Total</th>
@@ -17,21 +17,21 @@
                     <tbody>
                         <tr>
                             <td>Primaire</td>
-                            <td>35</td>
-                            <td>35</td>
-                            <td>78</td>
+                            <td>12</td>
+                            <td>10</td>
+                            <td>22</td>
                         </tr>
                         <tr>
                             <td>Collège</td>
-                            <td>33</td>
-                            <td>34</td>
-                            <td>67</td>
+                            <td>10</td>
+                            <td>10</td>
+                            <td>20</td>
                         </tr>
                         <tr>
                             <td>Total</td>
-                            <td>68</td>
-                            <td>69</td>
-                            <td>147</td>
+                            <td>22</td>
+                            <td>20</td>
+                            <td>42</td>
                         </tr>
                     </tbody>
                 </table>

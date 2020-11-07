@@ -133,7 +133,12 @@ function getSeriesActities(activites){
     return series
 }
 
-
+function createArrayFiles(name, data){
+    fs.writeFile("./arrays/" + name, data, function (err) {
+        if (err) return console.log(err);
+        console.log('File ' + name + " done !");
+    });
+}
 
 function getActivitiesTabs(activites, dates, eleves){
     let r = {}
@@ -144,7 +149,12 @@ function getActivitiesTabs(activites, dates, eleves){
         activitetab = activitetab.concat(element.aprem)
     })
 
+
+
     let singleActivity = [... new Set(activitetab)].sort()
+
+
+    db.set('activite', singleActivity).write()
 
     singleActivity.forEach(function(el) {
         
@@ -172,12 +182,45 @@ function getActivitiesTabs(activites, dates, eleves){
 }
 
 function makeTabActivities(tabActivities) {
+    
 
-    
+    // console.log(tabActivities)
+    db.set('htmlRecap', []).write()
+    db.set('tableauActivite', tabActivities).write()
+
+    let lx = db.get('tableauActivite.Course.eleves').values()
+    //console.log(lx)
+
     let dataReplace = {}
-    
+    let arrayTexte
     Object.keys(tabActivities).forEach(function(el){
-        dataReplace["activitie"] = el
+        // dataReplace["activitie"] = el
+        // 
+        arrayTexte = ""
+        
+
+        fs.readFile('template_array.txt', 'utf8' , (err, data) => {
+            if (err) console.error(err)
+            arrayTexte = data
+                .replace(/{%ACTIVITE%}/g, el)
+                .replace(/{%DATES%}/g,  tabActivities[el].dates.join(" - "))
+                .replace(/{%PF%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/c/i)).length)
+                .replace(/{%PM%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/c/i)).length)
+                .replace(/{%PT%}/g,  tabActivities[el].eleves.flat().filter(e => e.classe.match(/c/i)).length)
+                .replace(/{%CF%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                .replace(/{%CM%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                .replace(/{%CT%}/g,  tabActivities[el].eleves.flat().filter(e => e.classe.match(/6|5|4|3|2nd|1ère/i)).length)
+                .replace(/{%FT%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
+                .replace(/{%MT%}/g,  tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length)
+                .replace(/{%TT%}/g,  tabActivities[el].eleves.flat().length)
+
+            db.get('htmlRecap').push(arrayTexte).write()
+
+            createArrayFiles(el + "Array", arrayTexte)
+        })
+
+        /*
+        dataReplace = {}
         dataReplace["dates"] = tabActivities[el].dates
         dataReplace["PF"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && e.classe.match(/c/i)).length
         dataReplace["PM"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "M" && e.classe.match(/c/i)).length
@@ -188,12 +231,10 @@ function makeTabActivities(tabActivities) {
         dataReplace["FT"] = tabActivities[el].eleves.flat().filter(e => e.sexe == "F" && (e.classe.match(/c/i) || e.classe.match(/6|5|4|3|2nd|1ère/i))).length
         dataReplace["MT"] = dataReplace["PM"] + dataReplace["CM"]
         dataReplace["TT"] = tabActivities[el].eleves.flat().length
-
         fs.readFile('template_array.txt', 'utf8' , (err, data) => {
-            let arrayTexte
             if (err) console.error(err)
             arrayTexte = data
-                .replace(/{%ACTIVITE%}/g, dataReplace["activitie"])
+                .replace(/{%ACTIVITE%}/g, el)
                 .replace(/{%DATES%}/g, dataReplace["dates"])
                 .replace(/{%PF%}/g, dataReplace["PF"])
                 .replace(/{%PM%}/g, dataReplace["PM"])
@@ -205,24 +246,21 @@ function makeTabActivities(tabActivities) {
                 .replace(/{%MT%}/g, dataReplace["MT"])
                 .replace(/{%TT%}/g, dataReplace["TT"])
 
+            db.get('htmlRecap').push(arrayTexte).write()
+
             createArrayFiles(el + "Array", arrayTexte)
         })
 
+*/
+
+
+
     })
-
-    function createArrayFiles(name, data){
-        fs.writeFile("./arrays/" + name, data, function (err) {
-            if (err) return console.log(err);
-            console.log('File ' + name + " done !");
-        });
-    }
-
 
     /*
     fs.readFile('template_array.txt', 'utf8' , (err, data) => {
         console.log(data)
     })
-
     */
 }
 
@@ -259,7 +297,7 @@ app.post('/file-upload', upload.single('file'), (req, res) => {
     makeGraphe('idChart', 'Toutes les activités', serieActivities, "activitiesCharts")
     makeGraphe('idChartElevePrimiare', 'Tous les primaires', eleveSeries[0], "elevePrimiareChart")
     makeGraphe('idChartEleveCollege', 'Tous les collègiens', eleveSeries[1], "eleveCollegeChart")
-    //makeTabActivities(tabs)
+    makeTabActivities(tabs)
 })
 
 app.get('/makeCharts', (req, res) => {
@@ -268,10 +306,13 @@ app.get('/makeCharts', (req, res) => {
     let chart2 = fs.readFileSync(path.join(__dirname + '/charts/elevePrimiareChart'), 'utf8')
     let chart3 = fs.readFileSync(path.join(__dirname + '/charts/eleveCollegeChart'), 'utf8')
 
+    let arrayHTML = db.get('htmlRecap').value()
+
     res.send({
         chart1 : chart1,
         chart2 : chart2,
-        chart3 : chart3
+        chart3 : chart3,
+        htmlArray : arrayHTML
     })
 })
 
